@@ -1,6 +1,5 @@
 package com.block.blockj.agent;
 
-import java.io.Serial;
 import java.io.Serializable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -14,7 +13,7 @@ public class Block implements Serializable {
     private String previousHash;
     private String creator;
 
-    public Block() {}
+    public Block() { }
 
     @Override
     public String toString() {
@@ -30,15 +29,15 @@ public class Block implements Serializable {
         if (this == o) {
             return true;
         }
-
-
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-
         final Block block = (Block) o;
-
-        return index == block.index && timestamp.equals(block.timestamp);
+        return index == block.index
+                && timestamp.equals(block.timestamp)
+                && hash.equals(block.hash)
+                && previousHash.equals(block.previousHash)
+                && creator.equals(block.creator);
     }
 
     @Override
@@ -48,15 +47,15 @@ public class Block implements Serializable {
         result = 31 * result + hash.hashCode();
         result = 31 * result + previousHash.hashCode();
         result = 31 * result + creator.hashCode();
-
         return result;
     }
 
-    public Block(int index, String prevHash, String creator) {
+    public Block(int index, String preHash, String creator) {
         this.index = index;
-        this.previousHash = prevHash;
+        this.previousHash = preHash;
         this.creator = creator;
         timestamp = System.currentTimeMillis();
+        hash = calculateHash(String.valueOf(index) + previousHash + String.valueOf(timestamp));
     }
 
     public String getCreator() {
@@ -75,29 +74,27 @@ public class Block implements Serializable {
         return hash;
     }
 
-    public String calculateHash(String text) {
-        MessageDigest digest;
+    public String getPreviousHash() {
+        return previousHash;
+    }
 
+    private String calculateHash(String text) {
+        MessageDigest digest;
         try {
             digest = MessageDigest.getInstance("SHA-256");
-
-        } catch (NoSuchAlgorithmException e ) {
+        } catch (NoSuchAlgorithmException e) {
             return "HASH_ERROR";
         }
 
         final byte bytes[] = digest.digest(text.getBytes());
         final StringBuilder hexString = new StringBuilder();
-
         for (final byte b : bytes) {
             String hex = Integer.toHexString(0xff & b);
-
             if (hex.length() == 1) {
                 hexString.append('0');
             }
-
             hexString.append(hex);
         }
-
         return hexString.toString();
     }
 }
