@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AgentManager {
+
     private List<Agent> agents = new ArrayList<>();
     private static final Block root = new Block(0, "ROOT_HASH", "ROOT");
 
@@ -20,7 +21,6 @@ public class AgentManager {
                 return a;
             }
         }
-
         return null;
     }
 
@@ -38,11 +38,24 @@ public class AgentManager {
 
     public List<Block> getAgentBlockchain(String name) {
         final Agent agent = getAgent(name);
-
         if (agent != null) {
             return agent.getBlockchain();
         }
+        return null;
+    }
 
+    public void deleteAllAgents() {
+        for (Agent a : agents) {
+            a.stopHost();
+        }
+        agents.clear();
+    }
+
+    public Block createBlock(final String name) {
+        final Agent agent = getAgent(name);
+        if (agent != null) {
+            return agent.createBlock();
+        }
         return null;
     }
 }
